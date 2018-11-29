@@ -1,6 +1,9 @@
-<?php 
+<?php
 
 require_once __DIR__ . '/lib/functions.php';
+
+use MicrosoftAzure\Storage\Blob\BlobRestProxy;
+use MicrosoftAzure\Storage\Blob\Models\ListBlobsOptions;
 
 Kirby::plugin('sylvainjule/annotator', array(
 	'sections' => array(
@@ -21,15 +24,34 @@ Kirby::plugin('sylvainjule/annotator', array(
         		'storage' => function($storage = []) {
                     return $storage;
                 },
+            	'image' => function($image = null) {
+              		return $image;
+            	}
         	),
         	'computed' => array(
                 'image' => function() {
-                    if ($this->model()->type() == "image") {
-                        return $this->model()->url();
-                    }
-                    else {
-                        return false;
-                    }
+					$path = str_replace('{{title}}', F::safeName($this->model()->title()->value()), $this->image());
+
+					// Get the blob container and the prefix we are looking for
+					$blob = explode('/', $path)[0];
+					$prefix = str_replace($blob . '/', '', $path);
+
+					// Connect to blob storage
+					$blobClient = BlobRestProxy::createBlobService(kirby()->option('AZURE_BLOB_MEDIA_CONNECTION_STRING'));
+
+					// Find the file
+					$listBlobsOptions = new ListBlobsOptions();
+					$listBlobsOptions->setPrefix($prefix);
+
+					$blobList = $blobClient->listBlobs($blob , $listBlobsOptions);
+
+					foreach ($blobList->getBlobs() as $blob) {
+						// If found, return url of the file
+						return cloudinary_url($blob->getUrl(), [
+						'type'    => 'fetch',
+						'width'   => 800
+						]);
+					}
                 }
             )
         ),
