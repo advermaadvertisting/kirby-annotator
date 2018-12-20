@@ -24,13 +24,14 @@ Kirby::plugin('sylvainjule/annotator', array(
         		'storage' => function($storage = []) {
                     return $storage;
                 },
-            	'image' => function($image = null) {
-              		return $image;
-            	}
+              'imageMethod' => function($imageMethod = null) {
+                return $imageMethod;
+              },
         	),
         	'computed' => array(
                 'image' => function() {
-					$path = str_replace('{{title}}', F::safeName($this->model()->title()->value()), $this->image());
+            $imageMethod = $this->imageMethod();
+            $path = $this->model()->$imageMethod();
 
 					// Get the blob container and the prefix we are looking for
 					$blob = explode('/', $path)[0];
