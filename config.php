@@ -31,7 +31,11 @@ Kirby::plugin('sylvainjule/annotator', array(
         	'computed' => array(
                 'image' => function() {
             $imageMethod = $this->imageMethod();
-            $path = $this->model()->$imageMethod();
+						$path = $this->model()->$imageMethod();
+						
+						if (!$path) {
+							return;
+						}
 
 					// Get the blob container and the prefix we are looking for
 					$blob = explode('/', $path)[0];
