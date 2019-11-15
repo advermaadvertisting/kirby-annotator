@@ -56,7 +56,7 @@ import markerCircle from './components/markers/circle.vue'
 
 export default {
 	components: {markerPin, markerRect, markerCircle, iconPin, iconRect, iconCircle},
-	data() { 
+	data() {
 		return {
 			showSelector: false,
 			currentTool: '',
@@ -95,18 +95,18 @@ export default {
 	},
 	computed: {
 		currentColor() {
-			return this.storedColor != '' ? this.storedColor : this.manualColor 
+			return this.storedColor != '' ? this.storedColor : this.manualColor
 		},
 		id() {
-	      	return this.$store.state.form.current
+	      	return this.$store.state.content.current
 	    },
 	    pageValues() {
-	    	return this.$store.getters["form/values"](this.id)
+	    	return this.$store.getters["content/values"](this.id)
 	    },
 	},
 	created() {
-		document.addEventListener('mouseup', this.stopDragging)
-		
+    document.addEventListener('mouseup', this.stopDragging)
+
 		this.load()
 	        .then(response => {
 	        	this.tools    = response.tools
@@ -152,7 +152,7 @@ export default {
 
 			let _bounds = _markers.getBoundingClientRect()
 			let _width  = _markers.clientWidth
-			let _height = _markers.clientHeight 
+			let _height = _markers.clientHeight
 
   			let xabs = e.clientX - _bounds.left
   			let yabs = e.clientY - _bounds.top
@@ -176,7 +176,7 @@ export default {
 			if (e.which != 1) {
 				e.preventDefault()
 				return false
-			} 
+			}
 
 			// create a new marker
 			let newMarker = {
@@ -297,7 +297,7 @@ export default {
 				// set an angle
 				let angleDeg = Math.atan2(this.coords.yabs - (this.drag.yref * _height), this.coords.xabs - (this.drag.xref * _width)) * 180 / Math.PI
 				this.rotate = angleDeg.toFixed(4)
-			}			
+			}
 		},
 		initDragResize(val) {
 			// enable resizing
@@ -322,7 +322,7 @@ export default {
 					this.drag.wref         = _marker.w
 					this.drag.href         = _marker.h
 				}
-			}			
+			}
 		},
 		stopDragging(e) {
 			if (!this.drag.isDragging && !this.drag.isResizing) return false
@@ -378,14 +378,14 @@ export default {
 			            }
 		            }
 		        }
-	        } 
+	        }
 	        catch(e) {
 	        	console.warn(e)
 	        }
 	    },
 	    updateStructure() {
 	    	if(this.storage.markers) {
-	    		this.$store.dispatch("form/update", [this.id, this.storage.markers, this.markers])
+	    		this.$store.dispatch("content/update", [this.storage.markers, this.markers, this.id])
 	    	}
 	    },
 	},
